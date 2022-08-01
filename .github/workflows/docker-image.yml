@@ -24,11 +24,13 @@ jobs:
             *.md
             *.yml
             *.yaml
+    outputs:
+      changed: ${{ steps.changed-files.outputs.any_changed }}
 
 
   build-image:
+    if: needs.changed.outputs.changed == 'true'
     runs-on: ubuntu-latest
-    if: steps.changed-files.outputs.any_changed == 'true'
     steps:
       - name: Set up Docker Buildx
         if: steps.changed-files.outputs.any_changed == 'true'
