@@ -11,6 +11,7 @@ spec:
   selector:
     matchLabels:
       {{- include "sim-info.selectorLabels" . | nindent 6 }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -24,7 +25,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
       serviceAccountName: {{ include "sim-info.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
