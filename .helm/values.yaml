@@ -28,7 +28,7 @@ ingress:
     ingress.kubernetes.io/ssl-redirect: 'false'
     nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'
     nginx.ingress.kubernetes.io/from-to-www-redirect: 'false'
-    cert-manager.io/issuer: office-ru-ca-issuer
+    cert-manager.io/cluster-issuer: office-ru-ca-issuer
   hosts:
     - host: sim.office.ru
       paths:
