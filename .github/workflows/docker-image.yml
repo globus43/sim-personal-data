@@ -20,13 +20,13 @@ jobs:
           files: |
             img
             _conf
-            *.htm*
+            *.html
             *.css
             *.js
             *.png
           files_ignore: |
-            !.github
-            !.helm
+            .github
+            .helm
             *.md
             *.yml
             *.yaml
