@@ -17,10 +17,9 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v24
         with:
-          files: |
-            !.helm
-            !.github
           files_ignore: |
+            !.github
+            !.helm
             *.md
             *.yml
             *.yaml
