@@ -42,6 +42,9 @@ ingress:
     - secretName: sim-office-ru
       hosts:
         - sim.office.ru
+    - secretName: sim.s-globus.ru
+      hosts:
+        - sim.s-globus.ru
 resources:
   limits:
     cpu: 100m
