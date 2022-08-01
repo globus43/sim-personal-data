@@ -9,6 +9,8 @@ on:
 jobs:
   check-changed-files:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.changed-files.outputs.any_changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,11 +34,10 @@ jobs:
             *.md
             *.yml
             *.yaml
-    outputs:
-      changed: ${{ steps.changed-files.outputs.any_changed }}
 
 
   build-image:
+    needs: check-changed-files
     if: needs.check-changed-files.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
