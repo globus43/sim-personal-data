@@ -41,10 +41,10 @@ jobs:
     needs: check-changed-files
     if: needs.check-changed-files.outputs.changed == 'true'
 
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
+    #permissions:
+    #  contents: read
+    #  packages: write
+    #  id-token: write
 
     steps:
       - name: Checkout
