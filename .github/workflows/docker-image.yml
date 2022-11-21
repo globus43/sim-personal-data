@@ -31,10 +31,8 @@ jobs:
             *.yaml
 
       - name: List all changed files
+        id: changed-list
         run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-          done
           echo "${{ steps.changed-files.outputs.any_changed }}"
 
 
@@ -43,7 +41,7 @@ jobs:
     needs: check-changed-files
     steps:
       - run: |
-          echo "${{needs.check-changed-files.changed}}"
+          echo "${{needs.check-changed-files.outputs.changed}}"
 
   build-image:
     runs-on: ubuntu-latest
