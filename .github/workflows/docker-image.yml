@@ -107,9 +107,6 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: '.helm/values.yaml'
-          branch: master
-          message: "Update Repository/tag to ${{ env.DOCKER_IMAGE }} / ${{ env.DOCKER_TAG }}"
-          commitChange: true
           createPR: false
           changes: |
             {
