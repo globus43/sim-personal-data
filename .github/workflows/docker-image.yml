@@ -109,7 +109,7 @@ jobs:
           valueFile: '.helm/values.yaml'
           title: 'Image Updates'
           description: Update repository and tag in Helm values file
-          commitChange: true
+          commitChange: false
           message: 'Update Repository/tag to ${{ env.DOCKER_IMAGE }} / ${{ env.DOCKER_TAG }}'
           changes: |
             {
