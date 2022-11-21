@@ -68,19 +68,23 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
           
       - name: Extract Docker metadata
+        if: github.event_name != 'pull_request'
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ secrets.REGISTRY_URL }}/${GITHUB_REPOSITORY#*/}
 
       - name: Set Image
+        if: github.event_name != 'pull_request'
         run: echo "DOCKER_IMAGE=${{ secrets.REGISTRY_URL }}/${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
         
       - name: Set Tag
+        if: github.event_name != 'pull_request'
         run: echo "DOCKER_TAG=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Build & push Docker image
         id: build-and-push
+        if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -98,15 +102,17 @@ jobs:
       #    COSIGN_EXPERIMENTAL: "true"
       #  run: cosign sign ${{ secrets.REGISTRY_URL }}/${{ env.DOCKER_IMAGE }}@${{ steps.build-and-push.outputs.digest }}
       
-      - name: Update Docker repository
+      - name: Update Docker repository and tag
+        if: github.event_name != 'pull_request'
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: '.helm/values.yaml'
-          propertyPath: 'image.repository'
+          title: 'Image Updates'
+          description: Update repository and tag in Helm values file
+          commitChange: true
+          message: 'Update Repository/tag to ${{ env.DOCKER_IMAGE }} / ${{ env.DOCKER_TAG }}'
           changes: |
             {
               "image.repository": "${{ env.DOCKER_IMAGE }}",
               "image.tag": "${{ env.DOCKER_TAG }}"
             }
-          commitChange: true
-          message: 'Update Repository/tag to ${{ env.DOCKER_IMAGE }} / ${{ env.DOCKER_TAG }}'
