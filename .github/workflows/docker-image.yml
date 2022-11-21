@@ -107,11 +107,9 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: '.helm/values.yaml'
-          createPR: false
-          masterBranchName: master
-          branch: master
-          targetBranch: master
+          message: "Update doker image tag in Helm Chart"
           commitChange: true
+          createPR: false
           changes: |
             {
               "image.repository": "${{ env.DOCKER_IMAGE }}",
