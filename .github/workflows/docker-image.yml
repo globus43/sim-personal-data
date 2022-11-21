@@ -9,6 +9,8 @@ on:
 jobs:
   check-changed-files:
     runs-on: ubuntu-latest
+    outputs:
+      changed-files: ${{ steps.changed-files.outputs.any_changed }}
    
     steps:
       - name: Checkout repository
@@ -27,8 +29,7 @@ jobs:
      
   build-image:
     needs: check-changed-files
-    if: jobs.check-changed-files.outputs.any_changed == 'true'
-    #if: needs.check-changed-files.outputs.any_changed == 'true'
+    if: needs.check-changed-files.outputs.changed-files == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
