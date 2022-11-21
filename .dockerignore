@@ -1,6 +1,12 @@
 .dockerignore
+node_modules
+npm-debug.log
+Dockerfile
 .git
 .gitignore
-package.json
 package-lock.json
-tailwind.config.js
+node_modules
+werf.yaml
+README.md
+.helm
+.github
