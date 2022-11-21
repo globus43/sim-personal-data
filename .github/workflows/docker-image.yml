@@ -108,6 +108,10 @@ jobs:
         with:
           valueFile: '.helm/values.yaml'
           createPR: false
+          masterBranchName: master
+          branch: master
+          targetBranch: master
+          commitChange: true
           changes: |
             {
               "image.repository": "${{ env.DOCKER_IMAGE }}",
