@@ -3,7 +3,7 @@ revisionHistoryLimit: 0
 image:
   repository: registry.alexshangin.ru/sim-personal-data
   pullPolicy: IfNotPresent
-  tag: d2cd98c
+  tag: 6a393c6
 imagePullSecrets:
   - name: image-pull-secret
 nameOverride: ''
