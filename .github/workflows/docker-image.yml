@@ -1,4 +1,4 @@
-name: ci
+name: Docker
 
 on:
   push:
@@ -7,16 +7,13 @@ on:
     branches: [ "master" ]
 
 jobs:
-  check-changed-files:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.changed-files.outputs.any_changed }}
+   
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-        
+
       - name: Get specific changed files
         id: changed-files
         uses: tj-actions/changed-files@v24
@@ -27,25 +24,42 @@ jobs:
             *.md
             *.yml
             *.yaml
-
-
+     
   build-image:
     needs: check-changed-files
     if: needs.check-changed-files.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v1.13.1'
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Login to private registry
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
           registry: ${{ secrets.REGISTRY_URL }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
+          
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ secrets.REGISTRY_URL }}/${GITHUB_REPOSITORY#*/}
 
       - name: Set Image
         run: echo "DOCKER_IMAGE=${{ secrets.REGISTRY_URL }}/${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
@@ -54,15 +68,23 @@ jobs:
         run: echo "DOCKER_TAG=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Build & push Docker image
+        id: build-and-push
         uses: docker/build-push-action@v3
         with:
           context: .
           file: Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}, ${{ env.DOCKER_IMAGE }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: 'type=registry,ref=${{ secrets.REGISTRY_URL }}/${{ env.DOCKER_IMAGE }}:buildcache'
           cache-to: 'type=registry,ref=${{ secrets.REGISTRY_URL }}/${{ env.DOCKER_IMAGE }},mode=max'
+      
+      - name: Sign the published Docker image
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: cosign sign ${{ secrets.REGISTRY_URL }}/${{ env.DOCKER_IMAGE }}@${{ steps.build-and-push.outputs.digest }}
       
       - name: Update Docker repository
         uses: fjogeleit/yaml-update-action@main
