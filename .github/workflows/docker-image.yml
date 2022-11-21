@@ -10,6 +10,8 @@ jobs:
 
   check-changed-files:
     runs-on: ubuntu-latest
+    outputs:
+      changed: steps.changed-files.outputs.any_changed
    
     steps:
       - name: Checkout repository
@@ -33,10 +35,7 @@ jobs:
     needs: check-changed-files
     steps:
       - run: |
-          echo "${{needs.check-changed-files.outputs}}"
-          echo "${{needs.check-changed-files.outputs.all_changed_files}}"
-          echo "${{needs.check-changed-files.outputs.any_changed}}"
-          echo "${{toJSON(needs.check-changed-files.outputs)}}"
+          echo "${{needs.check-changed-files.changed}}"
 
   build-image:
     runs-on: ubuntu-latest
