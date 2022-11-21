@@ -27,7 +27,7 @@ jobs:
      
   build-image:
     needs: check-changed-files
-    if: needs.check-changed-files.outputs.any_changed == 'true'
+    #if: needs.check-changed-files.outputs.any_changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
